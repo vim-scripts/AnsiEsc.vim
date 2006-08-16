@@ -1,0 +1,69 @@
+*AnsiEsc.txt*	Ansi Escape Sequence Visualization		Aug 16, 2006
+
+Author:  Charles E. Campbell, Jr.  <NdrOchip@ScampbellPfamily.AbizM>
+	  (remove NOSPAM from Campbell's email first)
+Copyright: (c) 2004-2006 by Charles E. Campbell, Jr.	*AnsiEsc-copyright*
+           The VIM LICENSE applies to AnsiEsc.vim and AnsiEsc.txt
+           (see |copyright|) except use "AnsiEsc" instead of "Vim".
+	   No warranty, express or implied.  Use At-Your-Own-Risk.
+
+==============================================================================
+1. Contents					*AnsiEsc* *AnsiEsc-contents*
+   1. Contents         ...................................|AnsiEsc-contents|
+   2. AnsiEsc Manual   ...................................|AnsiEsc|
+   3. AnsiEsc History  ...................................|AnsiEsc-history|
+
+==============================================================================
+2. Manual						*AnsiEsc-manual*
+
+	CONCEAL
+		Your vim must have +conceal.  A typical way to get the
+		conceal feature:
+
+		* make distclean
+		* configure --with-features=huge
+		* make
+		* make install
+
+	USAGE
+		:so AnsiEsc.vim
+	
+	RESULT
+		Ansi escape sequences become concealed, but their effect
+		is emulated with Vim's syntax highlighting.
+
+	EXAMPLE
+
+		You'll want to   :so AnsiEsc.vim   to see this properly!
+
+            [34;47mColor Escape Sequences[m
+[37m  -  [m   [37;1m  1  [m   [37;2m  2  [m   [37;3m  3  [m   [37;4m  4  [m   [37;5m  5  [m   [37;7m  7  [m
+[30mblack[m   [30;1mblack[m   [30;2mblack[m   [30;3mblack[m   [30;4mblack[m   [30;5mblack[m   [30;7mblack[m
+[31mred[m     [31;1mred[m     [31;2mred[m     [31;3mred[m     [31;4mred[m     [31;5mred[m     [31;7mred[m
+[32mgreen[m   [32;1mgreen[m   [32;2mgreen[m   [32;3mgreen[m   [32;4mgreen[m   [32;5mgreen[m   [32;7mgreen[m
+[33myellow[m  [33;1myellow[m  [33;2myellow[m  [33;3myellow[m  [33;4myellow[m  [33;5myellow[m  [33;7myellow[m
+[34mblue[m    [34;1mblue[m    [34;2mblue[m    [34;3mblue[m    [34;4mblue[m    [34;5mblue[m    [34;7mblue[m
+[35mmagenta[m [35;1mmagenta[m [35;2mmagenta[m [35;3mmagenta[m [35;4mmagenta[m [35;5mmagenta[m [35;7mmagenta[m
+[36mcyan[m    [36;1mcyan[m    [36;2mcyan[m    [36;3mcyan[m    [36;4mcyan[m    [36;5mcyan[m    [36;7mcyan[m
+[37mwhite[m   [37;1mwhite[m   [37;2mwhite[m   [37;3mwhite[m   [37;4mwhite[m   [37;5mwhite[m   [37;7mwhite[m
+
+Black   [30;40mBlack[m [30;41mRed[m [30;42mGreen[m [30;43mYellow[m [30;44mBlue[m [30;45mMagenta[m [30;46mCyan[m [30;47mWhite[m
+Red     [31;40mBlack[m [31;41mRed[m [31;42mGreen[m [31;43mYellow[m [31;44mBlue[m [31;45mMagenta[m [31;46mCyan[m [31;47mWhite[m
+Green   [32;40mBlack[m [32;41mRed[m [32;42mGreen[m [32;43mYellow[m [32;44mBlue[m [32;45mMagenta[m [32;46mCyan[m [32;47mWhite[m
+Yellow  [33;40mBlack[m [33;41mRed[m [33;42mGreen[m [33;43mYellow[m [33;44mBlue[m [33;45mMagenta[m [33;46mCyan[m [33;47mWhite[m
+Blue    [34;40mBlack[m [34;41mRed[m [34;42mGreen[m [34;43mYellow[m [34;44mBlue[m [34;45mMagenta[m [34;46mCyan[m [34;47mWhite[m
+Magenta [35;40mBlack[m [35;41mRed[m [35;42mGreen[m [35;43mYellow[m [35;44mBlue[m [35;45mMagenta[m [35;46mCyan[m [35;47mWhite[m
+Cyan    [36;40mBlack[m [36;41mRed[m [36;42mGreen[m [36;43mYellow[m [36;44mBlue[m [36;45mMagenta[m [36;46mCyan[m [36;47mWhite[m
+White   [37;40mBlack[m [37;41mRed[m [37;42mGreen[m [37;43mYellow[m [37;44mBlue[m [37;45mMagenta[m [37;46mCyan[m [37;47mWhite[m
+
+==============================================================================
+3. AnsiEsc History					*AnsiEsc-history* {{{1
+  v8	Aug 16, 2006	* Uses undercurl, and so is only available for vim 7.0
+  v7  	Dec 14, 2004	* Works better with vim2ansi output and Vince Negri's
+			  conceal patch for vim 6.x.
+  v2	Nov 24, 2004	* This version didn't use Vince Negri's conceal patch
+			  (used Ignore highlighting)
+
+==============================================================================
+Modelines: {{{1
+vim:tw=78:ts=8:ft=help:fdm=marker:
