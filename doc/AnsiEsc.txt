@@ -1,8 +1,8 @@
-*AnsiEsc.txt*	Ansi Escape Sequence Visualization		Aug 16, 2006
+*AnsiEsc.txt*	Ansi Escape Sequence Visualization		Mar 18, 2009
 
 Author:  Charles E. Campbell, Jr.  <NdrOchip@ScampbellPfamily.AbizM>
 	  (remove NOSPAM from Campbell's email first)
-Copyright: (c) 2004-2006 by Charles E. Campbell, Jr.	*AnsiEsc-copyright*
+Copyright: (c) 2004-2008 by Charles E. Campbell, Jr.	*AnsiEsc-copyright*
            The VIM LICENSE applies to AnsiEsc.vim and AnsiEsc.txt
            (see |copyright|) except use "AnsiEsc" instead of "Vim".
 	   No warranty, express or implied.  Use At-Your-Own-Risk.
@@ -16,17 +16,29 @@ Copyright: (c) 2004-2006 by Charles E. Campbell, Jr.	*AnsiEsc-copyright*
 ==============================================================================
 2. Manual						*AnsiEsc-manual*
 
-	CONCEAL
-		Your vim must have +conceal.  A typical way to get the
+	CONCEAL -- the best mode.
+		For this, your vim must have +conceal.  A typical way to get the
 		conceal feature:
 
+		* cd ..wherever../vim70/
+		* wget http://vince.negri.googlepages.com/conceal-ownsyntax.diff
+		* patch -p0 < conceal-ownsyntax.diff
 		* make distclean
 		* configure --with-features=huge
 		* make
 		* make install
+	
+	Normal: -- ansi escape sequences themselves are Ignore'd
+		Ansi escape sequences have the expected effect on subsequent
+		text, but the ansi escape sequences themselves still take up
+		screen columns.  The sequences are displayed using "Ignore"
+		highlighting; depending on your colorscheme, this should either
+		make the sequences blend into your background or be visually
+		suppressed.  If the sequences aren't suppressed, you need to
+		improve your colorscheme!
 
 	USAGE
-		:so AnsiEsc.vim
+		:AnsiEsc
 	
 	RESULT
 		Ansi escape sequences become concealed, but their effect
@@ -34,7 +46,7 @@ Copyright: (c) 2004-2006 by Charles E. Campbell, Jr.	*AnsiEsc-copyright*
 
 	EXAMPLE
 
-		You'll want to   :so AnsiEsc.vim   to see this properly!
+		You'll want to   :AnsiEsc   to see the following properly!
 
             [34;47mColor Escape Sequences[m
 [37m  -  [m   [37;1m  1  [m   [37;2m  2  [m   [37;3m  3  [m   [37;4m  4  [m   [37;5m  5  [m   [37;7m  7  [m
@@ -47,17 +59,24 @@ Copyright: (c) 2004-2006 by Charles E. Campbell, Jr.	*AnsiEsc-copyright*
 [36mcyan[m    [36;1mcyan[m    [36;2mcyan[m    [36;3mcyan[m    [36;4mcyan[m    [36;5mcyan[m    [36;7mcyan[m
 [37mwhite[m   [37;1mwhite[m   [37;2mwhite[m   [37;3mwhite[m   [37;4mwhite[m   [37;5mwhite[m   [37;7mwhite[m
 
-Black   [30;40mBlack[m [30;41mRed[m [30;42mGreen[m [30;43mYellow[m [30;44mBlue[m [30;45mMagenta[m [30;46mCyan[m [30;47mWhite[m
-Red     [31;40mBlack[m [31;41mRed[m [31;42mGreen[m [31;43mYellow[m [31;44mBlue[m [31;45mMagenta[m [31;46mCyan[m [31;47mWhite[m
-Green   [32;40mBlack[m [32;41mRed[m [32;42mGreen[m [32;43mYellow[m [32;44mBlue[m [32;45mMagenta[m [32;46mCyan[m [32;47mWhite[m
-Yellow  [33;40mBlack[m [33;41mRed[m [33;42mGreen[m [33;43mYellow[m [33;44mBlue[m [33;45mMagenta[m [33;46mCyan[m [33;47mWhite[m
-Blue    [34;40mBlack[m [34;41mRed[m [34;42mGreen[m [34;43mYellow[m [34;44mBlue[m [34;45mMagenta[m [34;46mCyan[m [34;47mWhite[m
-Magenta [35;40mBlack[m [35;41mRed[m [35;42mGreen[m [35;43mYellow[m [35;44mBlue[m [35;45mMagenta[m [35;46mCyan[m [35;47mWhite[m
-Cyan    [36;40mBlack[m [36;41mRed[m [36;42mGreen[m [36;43mYellow[m [36;44mBlue[m [36;45mMagenta[m [36;46mCyan[m [36;47mWhite[m
-White   [37;40mBlack[m [37;41mRed[m [37;42mGreen[m [37;43mYellow[m [37;44mBlue[m [37;45mMagenta[m [37;46mCyan[m [37;47mWhite[m
+Black   [30;40mB[m  [30;41mB[m  [30;42mB[m  [30;43mB[m  [30;44mB[m   [30;45mB[m   [30;46mB[m   [30;47mB[m
+Red     [31;40mR[m  [31;41mR[m  [31;42mR[m  [31;43mR[m  [31;44mR[m   [31;45mR[m   [31;46mR[m   [31;47mR[m
+Green   [32;40mG[m  [32;41mG[m  [32;42mG[m  [32;43mG[m  [32;44mG[m   [32;45mG[m   [32;46mG[m   [32;47mG[m
+Yellow  [33;40mY[m  [33;41mY[m  [33;42mY[m  [33;43mY[m  [33;44mY[m   [33;45mY[m   [33;46mY[m   [33;47mY[m
+Blue    [34;40mB[m  [34;41mB[m  [34;42mB[m  [34;43mB[m  [34;44mB[m   [34;45mB[m   [34;46mB[m   [34;47mB[m
+Magenta [35;40mM[m  [35;41mM[m  [35;42mM[m  [35;43mM[m  [35;44mM[m   [35;45mM[m   [35;46mM[m   [35;47mM[m
+Cyan    [36;40mC[m  [36;41mC[m  [36;42mC[m  [36;43mC[m  [36;44mC[m   [36;45mC[m   [36;46mC[m   [36;47mC[m
+White   [37;40mW[m  [37;41mW[m  [37;42mW[m  [37;43mW[m  [37;44mW[m   [37;45mW[m   [37;46mW[m   [37;47mW[m
 
 ==============================================================================
 3. AnsiEsc History					*AnsiEsc-history* {{{1
+  v9    May 12, 2008    * Now in plugin + autoload format.  Provides :AnsiEsc
+                          command to toggle Ansi-escape sequence processing.
+	Jan 01, 2009	* Applies Ignore highlighting to extended Ansi escape
+			  sequences support 256-colors.
+	Mar 18, 2009    * Includes "rapid blink" ansi escape sequences.  Vim
+			  doesn't have a blinking attribute, so such text uses
+			  "standout" for vim and "undercurl" for gvim.
   v8	Aug 16, 2006	* Uses undercurl, and so is only available for vim 7.0
   v7  	Dec 14, 2004	* Works better with vim2ansi output and Vince Negri's
 			  conceal patch for vim 6.x.
