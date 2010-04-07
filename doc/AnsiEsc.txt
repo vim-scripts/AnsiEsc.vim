@@ -1,8 +1,8 @@
-*AnsiEsc.txt*	Ansi Escape Sequence Visualization		Mar 18, 2009
+*AnsiEsc.txt*	Ansi Escape Sequence Visualization		Apr 07, 2010
 
 Author:  Charles E. Campbell, Jr.  <NdrOchip@ScampbellPfamily.AbizM>
 	  (remove NOSPAM from Campbell's email first)
-Copyright: (c) 2004-2008 by Charles E. Campbell, Jr.	*AnsiEsc-copyright*
+Copyright: (c) 2004-2009 by Charles E. Campbell, Jr.	*AnsiEsc-copyright*
            The VIM LICENSE applies to AnsiEsc.vim and AnsiEsc.txt
            (see |copyright|) except use "AnsiEsc" instead of "Vim".
 	   No warranty, express or implied.  Use At-Your-Own-Risk.
@@ -20,7 +20,7 @@ Copyright: (c) 2004-2008 by Charles E. Campbell, Jr.	*AnsiEsc-copyright*
 		For this, your vim must have +conceal.  A typical way to get the
 		conceal feature:
 
-		* cd ..wherever../vim70/
+		* cd ..wherever../vim72/
 		* wget http://vince.negri.googlepages.com/conceal-ownsyntax.diff
 		* patch -p0 < conceal-ownsyntax.diff
 		* make distclean
@@ -28,7 +28,7 @@ Copyright: (c) 2004-2008 by Charles E. Campbell, Jr.	*AnsiEsc-copyright*
 		* make
 		* make install
 	
-	Normal: -- ansi escape sequences themselves are Ignore'd
+	Normal: -- ansi escape sequences themselves are Ignore'd~
 		Ansi escape sequences have the expected effect on subsequent
 		text, but the ansi escape sequences themselves still take up
 		screen columns.  The sequences are displayed using "Ignore"
@@ -37,14 +37,23 @@ Copyright: (c) 2004-2008 by Charles E. Campbell, Jr.	*AnsiEsc-copyright*
 		suppressed.  If the sequences aren't suppressed, you need to
 		improve your colorscheme!
 
-	USAGE
+	USAGE~
 		:AnsiEsc
 	
-	RESULT
-		Ansi escape sequences become concealed, but their effect
-		is emulated with Vim's syntax highlighting.
+	RESULT~
+		Ansi escape sequences become concealed or ignored (depending
+		on whether your vim supports Negri's conceal mode), and their
+		effect on subsequent text is emulated with Vim's syntax
+		highlighting.
 
-	EXAMPLE
+		Syntax highlighting for one and two element codes are
+		hard-coded into AnsiEsc.vim.  There are too many possibilities
+		for three or more element codes; these are supported by
+		examining the file for such sequences and only building syntax
+		highlighting rules for such sequences as are actually present
+		in the document.
+
+	EXAMPLE~
 
 		You'll want to   :AnsiEsc   to see the following properly!
 
@@ -70,6 +79,10 @@ White   [37;40mW[m  [37;41mW[m  [37;42mW[m  [37;43mW[m  [37;44mW[m   
 
 ==============================================================================
 3. AnsiEsc History					*AnsiEsc-history* {{{1
+  v10   May 06, 2009	* Three or more codes in an ANSI escape sequence are
+			  supported by building custom syntax and highlighting
+			  commands.
+	May 20, 2009	* cecutil bugfix
   v9    May 12, 2008    * Now in plugin + autoload format.  Provides :AnsiEsc
                           command to toggle Ansi-escape sequence processing.
 	Jan 01, 2009	* Applies Ignore highlighting to extended Ansi escape

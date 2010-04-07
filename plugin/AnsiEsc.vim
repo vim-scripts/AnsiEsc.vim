@@ -1,29 +1,22 @@
 " AnsiEsc.vim: Uses syntax highlighting.  A vim 7.0 plugin!
 " Language:		Text with ansi escape sequences
 " Maintainer:	Dr. Charles E. Campbell, Jr. <NdrOchipS@PcampbellAfamily.Mbiz>
-" Version:		9
-" Date:		Mar 18, 2009
+" Version:		10
+" Date:		Apr 07, 2010
 "
 " Usage: :AnsiEsc
 "
-" Typical Compiling Directions:
-"  To get Vince Negri's conceal-patch is available using wget:
-"      wget http://vince.negri.googlepages.com/conceal-ownsyntax.diff
-"      cd ...Wherever/vim70
-"      patch -p0 <...Wherever/conceal-ownsyntax.diff
-"   You'll then need to
-"      cd src
-"      configure --with-features=huge
-"      make
-"      make install
+"   Note: this plugin requires Vince Negri's conceal-ownsyntax patch
+"         See http://groups.google.com/group/vim_dev/web/vim-patches, Patch#14
 "
 " GetLatestVimScripts: 302 1 :AutoInstall: AnsiEsc.vim
+"redraw!|call DechoSep()|call inputsave()|call input("Press <cr> to continue")|call inputrestore()
 " ---------------------------------------------------------------------
 "  Load Once: {{{1
 if exists("g:loaded_AnsiEsc")
  finish
 endif
-let g:loaded_AnsiEsc = "v9"
+let g:loaded_AnsiEsc = "v10"
 if v:version < 700
  echohl WarningMsg
  echo "***warning*** this version of AnsiEsc needs vim 7.0"
@@ -43,12 +36,21 @@ fun! AnsiEsc#AnsiEsc()
   endif
   if s:AnsiEsc_enabled_{bn}
    " disable AnsiEsc highlighting
+"   call Decho("disable AnsiEsc highlighting: s:AnsiEsc_ft_".bn."<".s:AnsiEsc_ft_{bn}."> bn#".bn)
+   if exists("g:colors_name")|let colorname= g:colors_name|endif
+   hi! link ansiStop NONE
    syn clear
-   exe "set ft=".s:AnsiEsc_ft
+   hi  clear
+   syn reset
+   exe "set ft=".s:AnsiEsc_ft_{bn}
+   if exists("colorname")|exe "colors ".colorname|endif
    let s:AnsiEsc_enabled_{bn}= 0
+"   call Dret("AnsiEsc#AnsiEsc")
+   return
   else
-   let s:AnsiEsc_ft           = &ft
+   let s:AnsiEsc_ft_{bn}      = &ft
    let s:AnsiEsc_enabled_{bn} = 1
+"   call Decho("enable AnsiEsc highlighting: s:AnsiEsc_ft_".bn."<".s:AnsiEsc_ft_{bn}."> bn#".bn)
 
    " -----------------
    "  Conceal Support: {{{2
@@ -65,99 +67,88 @@ fun! AnsiEsc#AnsiEsc()
   " ------------------------------
   " Ansi Escape Sequence Handling: {{{2
   " ------------------------------
-  syn region ansiBlack		 start="\e\[30m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRed		 start="\e\[31m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiGreen		 start="\e\[32m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiYellow		 start="\e\[33m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlue		 start="\e\[34m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiMagenta	 start="\e\[35m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiCyan		 start="\e\[36m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiWhite		 start="\e\[37m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiNone		start="\e\[[01;]m"  end="\e\["me=e-2 contains=ansiConceal
 
-  syn region ansiBoldBlack	 start="\e\[\%(1;30\|30;1\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBoldRed	 start="\e\[\%(1;31\|31;1\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBoldGreen	 start="\e\[\%(1;32\|32;1\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBoldYellow	 start="\e\[\%(1;33\|33;1\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBoldBlue	 start="\e\[\%(1;34\|34;1\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBoldMagenta	 start="\e\[\%(1;35\|35;1\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBoldCyan	 start="\e\[\%(1;36\|36;1\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBoldWhite	 start="\e\[\%(1;37\|37;1\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlack		start="\e\[0\=;\=30m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRed		start="\e\[0\=;\=31m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiGreen		start="\e\[0\=;\=32m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiYellow		start="\e\[0\=;\=33m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlue		start="\e\[0\=;\=34m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiMagenta	start="\e\[0\=;\=35m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiCyan		start="\e\[0\=;\=36m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiWhite		start="\e\[0\=;\=37m" end="\e\["me=e-2 contains=ansiConceal
 
-  syn region ansiStandoutBlack	 start="\e\[\%(1;\)\=\%(3;30\|30;3\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiStandoutRed	 start="\e\[\%(1;\)\=\%(3;31\|31;3\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiStandoutGreen	 start="\e\[\%(1;\)\=\%(3;32\|32;3\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiStandoutYellow	 start="\e\[\%(1;\)\=\%(3;33\|33;3\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiStandoutBlue	 start="\e\[\%(1;\)\=\%(3;34\|34;3\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiStandoutMagenta	 start="\e\[\%(1;\)\=\%(3;35\|35;3\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiStandoutCyan	 start="\e\[\%(1;\)\=\%(3;36\|36;3\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiStandoutWhite	 start="\e\[\%(1;\)\=\%(3;37\|37;3\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlackBg	start="\e\[0\=;\=\%(1;\)\=40\%(1;\)\=m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRedBg		start="\e\[0\=;\=\%(1;\)\=41\%(1;\)\=m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiGreenBg	start="\e\[0\=;\=\%(1;\)\=42\%(1;\)\=m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiYellowBg	start="\e\[0\=;\=\%(1;\)\=43\%(1;\)\=m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlueBg		start="\e\[0\=;\=\%(1;\)\=44\%(1;\)\=m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiMagentaBg	start="\e\[0\=;\=\%(1;\)\=45\%(1;\)\=m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiCyanBg		start="\e\[0\=;\=\%(1;\)\=46\%(1;\)\=m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiWhiteBg	start="\e\[0\=;\=\%(1;\)\=47\%(1;\)\=m" end="\e\["me=e-2 contains=ansiConceal
 
-  syn region ansiItalicBlack	 start="\e\[\%(1;\)\=\%(2;30\|30;2\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiItalicRed	 start="\e\[\%(1;\)\=\%(2;31\|31;2\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiItalicGreen	 start="\e\[\%(1;\)\=\%(2;32\|32;2\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiItalicYellow	 start="\e\[\%(1;\)\=\%(2;33\|33;2\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiItalicBlue	 start="\e\[\%(1;\)\=\%(2;34\|34;2\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiItalicMagenta	 start="\e\[\%(1;\)\=\%(2;35\|35;2\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiItalicCyan	 start="\e\[\%(1;\)\=\%(2;36\|36;2\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiItalicWhite	 start="\e\[\%(1;\)\=\%(2;37\|37;2\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBoldBlack	 start="\e\[0\=;\=\%(1;30\|30;1\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBoldRed	 start="\e\[0\=;\=\%(1;31\|31;1\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBoldGreen	 start="\e\[0\=;\=\%(1;32\|32;1\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBoldYellow	 start="\e\[0\=;\=\%(1;33\|33;1\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBoldBlue	 start="\e\[0\=;\=\%(1;34\|34;1\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBoldMagenta	 start="\e\[0\=;\=\%(1;35\|35;1\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBoldCyan	 start="\e\[0\=;\=\%(1;36\|36;1\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBoldWhite	 start="\e\[0\=;\=\%(1;37\|37;1\)m" end="\e\["me=e-2 contains=ansiConceal
 
-  syn region ansiUnderlineBlack	 start="\e\[\%(1;\)\=\%(4;30\|30;4\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiUnderlineRed	 start="\e\[\%(1;\)\=\%(4;31\|31;4\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiUnderlineGreen	 start="\e\[\%(1;\)\=\%(4;32\|32;4\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiUnderlineYellow	 start="\e\[\%(1;\)\=\%(4;33\|33;4\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiUnderlineBlue	 start="\e\[\%(1;\)\=\%(4;34\|34;4\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiUnderlineMagenta	 start="\e\[\%(1;\)\=\%(4;35\|35;4\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiUnderlineCyan	 start="\e\[\%(1;\)\=\%(4;36\|36;4\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiUnderlineWhite	 start="\e\[\%(1;\)\=\%(4;37\|37;4\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiStandoutBlack	 start="\e\[0\=;\=\%(1;\)\=\%(3;30\|30;3\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiStandoutRed	 start="\e\[0\=;\=\%(1;\)\=\%(3;31\|31;3\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiStandoutGreen	 start="\e\[0\=;\=\%(1;\)\=\%(3;32\|32;3\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiStandoutYellow	 start="\e\[0\=;\=\%(1;\)\=\%(3;33\|33;3\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiStandoutBlue	 start="\e\[0\=;\=\%(1;\)\=\%(3;34\|34;3\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiStandoutMagenta	 start="\e\[0\=;\=\%(1;\)\=\%(3;35\|35;3\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiStandoutCyan	 start="\e\[0\=;\=\%(1;\)\=\%(3;36\|36;3\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiStandoutWhite	 start="\e\[0\=;\=\%(1;\)\=\%(3;37\|37;3\)m" end="\e\["me=e-2 contains=ansiConceal
 
-  syn region ansiBlinkBlack	 start="\e\[\%(1;\)\=\%(5;30\|30;5\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlinkRed	 start="\e\[\%(1;\)\=\%(5;31\|31;5\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlinkGreen	 start="\e\[\%(1;\)\=\%(5;32\|32;5\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlinkYellow	 start="\e\[\%(1;\)\=\%(5;33\|33;5\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlinkBlue	 start="\e\[\%(1;\)\=\%(5;34\|34;5\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlinkMagenta	 start="\e\[\%(1;\)\=\%(5;35\|35;5\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlinkCyan	 start="\e\[\%(1;\)\=\%(5;36\|36;5\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlinkWhite	 start="\e\[\%(1;\)\=\%(5;37\|37;5\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiItalicBlack	 start="\e\[0\=;\=\%(1;\)\=\%(2;30\|30;2\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiItalicRed	 start="\e\[0\=;\=\%(1;\)\=\%(2;31\|31;2\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiItalicGreen	 start="\e\[0\=;\=\%(1;\)\=\%(2;32\|32;2\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiItalicYellow	 start="\e\[0\=;\=\%(1;\)\=\%(2;33\|33;2\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiItalicBlue	 start="\e\[0\=;\=\%(1;\)\=\%(2;34\|34;2\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiItalicMagenta	 start="\e\[0\=;\=\%(1;\)\=\%(2;35\|35;2\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiItalicCyan	 start="\e\[0\=;\=\%(1;\)\=\%(2;36\|36;2\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiItalicWhite	 start="\e\[0\=;\=\%(1;\)\=\%(2;37\|37;2\)m" end="\e\["me=e-2 contains=ansiConceal
 
-  syn region ansiRapidBlinkBlack	 start="\e\[\%(1;\)\=\%(6;30\|30;6\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRapidBlinkRed	 start="\e\[\%(1;\)\=\%(6;31\|31;6\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRapidBlinkGreen	 start="\e\[\%(1;\)\=\%(6;32\|32;6\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRapidBlinkYellow	 start="\e\[\%(1;\)\=\%(6;33\|33;6\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRapidBlinkBlue	 start="\e\[\%(1;\)\=\%(6;34\|34;6\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRapidBlinkMagenta	 start="\e\[\%(1;\)\=\%(6;35\|35;6\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRapidBlinkCyan	 start="\e\[\%(1;\)\=\%(6;36\|36;6\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRapidBlinkWhite	 start="\e\[\%(1;\)\=\%(6;37\|37;6\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiUnderlineBlack	 start="\e\[0\=;\=\%(1;\)\=\%(4;30\|30;4\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiUnderlineRed	 start="\e\[0\=;\=\%(1;\)\=\%(4;31\|31;4\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiUnderlineGreen	 start="\e\[0\=;\=\%(1;\)\=\%(4;32\|32;4\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiUnderlineYellow	 start="\e\[0\=;\=\%(1;\)\=\%(4;33\|33;4\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiUnderlineBlue	 start="\e\[0\=;\=\%(1;\)\=\%(4;34\|34;4\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiUnderlineMagenta	 start="\e\[0\=;\=\%(1;\)\=\%(4;35\|35;4\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiUnderlineCyan	 start="\e\[0\=;\=\%(1;\)\=\%(4;36\|36;4\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiUnderlineWhite	 start="\e\[0\=;\=\%(1;\)\=\%(4;37\|37;4\)m" end="\e\["me=e-2 contains=ansiConceal
 
-  syn region ansiRVBlack	 start="\e\[\%(1;\)\=\%(7;30\|30;7\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRVRed		 start="\e\[\%(1;\)\=\%(7;31\|31;7\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRVGreen	 start="\e\[\%(1;\)\=\%(7;32\|32;7\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRVYellow	 start="\e\[\%(1;\)\=\%(7;33\|33;7\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRVBlue		 start="\e\[\%(1;\)\=\%(7;34\|34;7\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRVMagenta	 start="\e\[\%(1;\)\=\%(7;35\|35;7\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRVCyan		 start="\e\[\%(1;\)\=\%(7;36\|36;7\)m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRVWhite		 start="\e\[\%(1;\)\=\%(7;37\|37;7\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlinkBlack	 start="\e\[0\=;\=\%(1;\)\=\%(5;30\|30;5\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlinkRed	 start="\e\[0\=;\=\%(1;\)\=\%(5;31\|31;5\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlinkGreen	 start="\e\[0\=;\=\%(1;\)\=\%(5;32\|32;5\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlinkYellow	 start="\e\[0\=;\=\%(1;\)\=\%(5;33\|33;5\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlinkBlue	 start="\e\[0\=;\=\%(1;\)\=\%(5;34\|34;5\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlinkMagenta	 start="\e\[0\=;\=\%(1;\)\=\%(5;35\|35;5\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlinkCyan	 start="\e\[0\=;\=\%(1;\)\=\%(5;36\|36;5\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlinkWhite	 start="\e\[0\=;\=\%(1;\)\=\%(5;37\|37;5\)m" end="\e\["me=e-2 contains=ansiConceal
 
-  " handle 256-color terminals
-  " unfortunately the following loops supporting 256-color mode
-  "   a) take a *long* time, and
-  "   b) cause the E424: Too many different highlighting attributes in use
-  " so I don't advise using g:ansiesc_256color yet
-  if v:version >= 700 && exists("&t_Co") && &t_Co == 256 && exists("g:ansiesc_256color")
-"   call Decho("handle 256-color terminal")
-   let icolor= 1
-   while icolor < 256
-    let jcolor= 1
-    exe "syn region ansi256Color_".icolor.'_0 start="\e\[\%(1;\)\=47;5;'.icolor.'m" end="\e\["me=e-2 contains=ansiConceal'
-    exe "syn region ansi256Color_0_".icolor.' start="\e\[\%(1;\)\=48;5;'.icolor.'m" end="\e\["me=e-2 contains=ansiConceal'
-"    call Decho("exe syn region ansi256Color_".icolor.' start="\e\[\%(1;\)\=47;5;'.icolor.'m" end="\e\["me=e-2 contains=ansiConceal')
-    while jcolor < 256
-     exe "syn region ansi256Color_".icolor."_".jcolor.' start="\e\[\%(1;\)\=\%(47;5;'.icolor.';48;5;'.jcolor.'\|48;5;'.jcolor.';47;5;'.icolor.'\)m" end="\e\["me=e-2 contains=ansiConceal'
-"     call Decho("exe syn region ansi256Color_".icolor."_".jcolor.' start="\e\[\%(1;\)\=\%(47;5;'.icolor.';48;5;'.jcolor.'\|48;5;'.jcolor.';47;5;'.icolor.'\)m" end="\e\["me=e-2 contains=ansiConceal')
-     let jcolor= jcolor + 1
-    endwhile
-    let icolor= icolor + 1
-   endwhile
-  endif
+  syn region ansiRapidBlinkBlack	 start="\e\[0\=;\=\%(1;\)\=\%(6;30\|30;6\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRapidBlinkRed	 start="\e\[0\=;\=\%(1;\)\=\%(6;31\|31;6\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRapidBlinkGreen	 start="\e\[0\=;\=\%(1;\)\=\%(6;32\|32;6\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRapidBlinkYellow	 start="\e\[0\=;\=\%(1;\)\=\%(6;33\|33;6\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRapidBlinkBlue	 start="\e\[0\=;\=\%(1;\)\=\%(6;34\|34;6\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRapidBlinkMagenta	 start="\e\[0\=;\=\%(1;\)\=\%(6;35\|35;6\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRapidBlinkCyan	 start="\e\[0\=;\=\%(1;\)\=\%(6;36\|36;6\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRapidBlinkWhite	 start="\e\[0\=;\=\%(1;\)\=\%(6;37\|37;6\)m" end="\e\["me=e-2 contains=ansiConceal
+
+  syn region ansiRVBlack	 start="\e\[0\=;\=\%(1;\)\=\%(7;30\|30;7\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRVRed		 start="\e\[0\=;\=\%(1;\)\=\%(7;31\|31;7\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRVGreen	 start="\e\[0\=;\=\%(1;\)\=\%(7;32\|32;7\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRVYellow	 start="\e\[0\=;\=\%(1;\)\=\%(7;33\|33;7\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRVBlue		 start="\e\[0\=;\=\%(1;\)\=\%(7;34\|34;7\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRVMagenta	 start="\e\[0\=;\=\%(1;\)\=\%(7;35\|35;7\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRVCyan		 start="\e\[0\=;\=\%(1;\)\=\%(7;36\|36;7\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRVWhite	 start="\e\[0\=;\=\%(1;\)\=\%(7;37\|37;7\)m" end="\e\["me=e-2 contains=ansiConceal
 
   if has("conceal")
    syn match ansiStop		conceal "\e\[0\=m"
@@ -171,79 +162,79 @@ fun! AnsiEsc#AnsiEsc()
   " ---------------------------------------------------------------------
   " Some Color Combinations: - can't do 'em all, the qty of highlighting groups is limited! {{{2
   " ---------------------------------------------------------------------
-  syn region ansiBlackBlack	 start="\e\[30;40m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRedBlack	 start="\e\[31;40m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiGreenBlack	 start="\e\[32;40m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiYellowBlack	 start="\e\[33;40m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlueBlack	 start="\e\[34;40m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiMagentaBlack	 start="\e\[35;40m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiCyanBlack	 start="\e\[36;40m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiWhiteBlack	 start="\e\[37;40m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlackBlack	 start="\e\[0\=;\=\(30;40\|40;30\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRedBlack	 start="\e\[0\=;\=\(31;40\|40;31\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiGreenBlack	 start="\e\[0\=;\=\(32;40\|40;32\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiYellowBlack	 start="\e\[0\=;\=\(33;40\|40;33\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlueBlack	 start="\e\[0\=;\=\(34;40\|40;34\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiMagentaBlack	 start="\e\[0\=;\=\(35;40\|40;35\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiCyanBlack	 start="\e\[0\=;\=\(36;40\|40;36\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiWhiteBlack	 start="\e\[0\=;\=\(37;40\|40;37\)m" end="\e\["me=e-2 contains=ansiConceal
 
-  syn region ansiBlackRed	 start="\e\[30;41m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRedRed		 start="\e\[31;41m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiGreenRed	 start="\e\[32;41m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiYellowRed	 start="\e\[33;41m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlueRed	 start="\e\[34;41m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiMagentaRed	 start="\e\[35;41m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiCyanRed	 start="\e\[36;41m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiWhiteRed	 start="\e\[37;41m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlackRed	 start="\e\[0\=;\=\(30;41\|41;30\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRedRed		 start="\e\[0\=;\=\(31;41\|41;31\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiGreenRed	 start="\e\[0\=;\=\(32;41\|41;32\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiYellowRed	 start="\e\[0\=;\=\(33;41\|41;33\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlueRed	 start="\e\[0\=;\=\(34;41\|41;34\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiMagentaRed	 start="\e\[0\=;\=\(35;41\|41;35\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiCyanRed	 start="\e\[0\=;\=\(36;41\|41;36\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiWhiteRed	 start="\e\[0\=;\=\(37;41\|41;37\)m" end="\e\["me=e-2 contains=ansiConceal
 
-  syn region ansiBlackGreen	 start="\e\[30;42m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRedGreen	 start="\e\[31;42m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiGreenGreen	 start="\e\[32;42m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiYellowGreen	 start="\e\[33;42m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlueGreen	 start="\e\[34;42m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiMagentaGreen	 start="\e\[35;42m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiCyanGreen	 start="\e\[36;42m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiWhiteGreen	 start="\e\[37;42m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlackGreen	 start="\e\[0\=;\=\(30;42\|42;30\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRedGreen	 start="\e\[0\=;\=\(31;42\|42;31\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiGreenGreen	 start="\e\[0\=;\=\(32;42\|42;32\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiYellowGreen	 start="\e\[0\=;\=\(33;42\|42;33\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlueGreen	 start="\e\[0\=;\=\(34;42\|42;34\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiMagentaGreen	 start="\e\[0\=;\=\(35;42\|42;35\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiCyanGreen	 start="\e\[0\=;\=\(36;42\|42;36\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiWhiteGreen	 start="\e\[0\=;\=\(37;42\|42;37\)m" end="\e\["me=e-2 contains=ansiConceal
 
-  syn region ansiBlackYellow	 start="\e\[30;43m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRedYellow	 start="\e\[31;43m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiGreenYellow	 start="\e\[32;43m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiYellowYellow	 start="\e\[33;43m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlueYellow	 start="\e\[34;43m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiMagentaYellow	 start="\e\[35;43m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiCyanYellow	 start="\e\[36;43m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiWhiteYellow	 start="\e\[37;43m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlackYellow	 start="\e\[0\=;\=\(30;43\|43;30\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRedYellow	 start="\e\[0\=;\=\(31;43\|43;31\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiGreenYellow	 start="\e\[0\=;\=\(32;43\|43;32\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiYellowYellow	 start="\e\[0\=;\=\(33;43\|43;33\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlueYellow	 start="\e\[0\=;\=\(34;43\|43;34\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiMagentaYellow	 start="\e\[0\=;\=\(35;43\|43;35\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiCyanYellow	 start="\e\[0\=;\=\(36;43\|43;36\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiWhiteYellow	 start="\e\[0\=;\=\(37;43\|43;37\)m" end="\e\["me=e-2 contains=ansiConceal
 
-  syn region ansiBlackBlue	 start="\e\[30;44m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRedBlue	 start="\e\[31;44m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiGreenBlue	 start="\e\[32;44m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiYellowBlue	 start="\e\[33;44m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlueBlue	 start="\e\[34;44m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiMagentaBlue	 start="\e\[35;44m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiCyanBlue	 start="\e\[36;44m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiWhiteBlue	 start="\e\[37;44m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlackBlue	 start="\e\[0\=;\=\(30;44\|44;30\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRedBlue	 start="\e\[0\=;\=\(31;44\|44;31\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiGreenBlue	 start="\e\[0\=;\=\(32;44\|44;32\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiYellowBlue	 start="\e\[0\=;\=\(33;44\|44;33\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlueBlue	 start="\e\[0\=;\=\(34;44\|44;34\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiMagentaBlue	 start="\e\[0\=;\=\(35;44\|44;35\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiCyanBlue	 start="\e\[0\=;\=\(36;44\|44;36\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiWhiteBlue	 start="\e\[0\=;\=\(37;44\|44;37\)m" end="\e\["me=e-2 contains=ansiConceal
 
-  syn region ansiBlackMagenta	 start="\e\[30;45m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRedMagenta	 start="\e\[31;45m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiGreenMagenta	 start="\e\[32;45m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiYellowMagenta	 start="\e\[33;45m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlueMagenta	 start="\e\[34;45m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiMagentaMagenta	 start="\e\[35;45m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiCyanMagenta	 start="\e\[36;45m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiWhiteMagenta	 start="\e\[37;45m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlackMagenta	 start="\e\[0\=;\=\(30;45\|45;30\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRedMagenta	 start="\e\[0\=;\=\(31;45\|45;31\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiGreenMagenta	 start="\e\[0\=;\=\(32;45\|45;32\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiYellowMagenta	 start="\e\[0\=;\=\(33;45\|45;33\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlueMagenta	 start="\e\[0\=;\=\(34;45\|45;34\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiMagentaMagenta	 start="\e\[0\=;\=\(35;45\|45;35\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiCyanMagenta	 start="\e\[0\=;\=\(36;45\|45;36\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiWhiteMagenta	 start="\e\[0\=;\=\(37;45\|45;37\)m" end="\e\["me=e-2 contains=ansiConceal
 
-  syn region ansiBlackCyan	 start="\e\[30;46m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRedCyan	 start="\e\[31;46m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiGreenCyan	 start="\e\[32;46m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiYellowCyan	 start="\e\[33;46m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlueCyan	 start="\e\[34;46m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiMagentaCyan	 start="\e\[35;46m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiCyanCyan	 start="\e\[36;46m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiWhiteCyan	 start="\e\[37;46m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlackCyan	 start="\e\[0\=;\=\(30;46\|46;30\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRedCyan	 start="\e\[0\=;\=\(31;46\|46;31\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiGreenCyan	 start="\e\[0\=;\=\(32;46\|46;32\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiYellowCyan	 start="\e\[0\=;\=\(33;46\|46;33\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlueCyan	 start="\e\[0\=;\=\(34;46\|46;34\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiMagentaCyan	 start="\e\[0\=;\=\(35;46\|46;35\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiCyanCyan	 start="\e\[0\=;\=\(36;46\|46;36\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiWhiteCyan	 start="\e\[0\=;\=\(37;46\|46;37\)m" end="\e\["me=e-2 contains=ansiConceal
 
-  syn region ansiBlackWhite	 start="\e\[30;47m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiRedWhite	 start="\e\[31;47m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiGreenWhite	 start="\e\[32;47m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiYellowWhite	 start="\e\[33;47m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiBlueWhite	 start="\e\[34;47m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiMagentaWhite	 start="\e\[35;47m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiCyanWhite	 start="\e\[36;47m" end="\e\["me=e-2 contains=ansiConceal
-  syn region ansiWhiteWhite	 start="\e\[37;47m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlackWhite	 start="\e\[0\=;\=\(30;47\|47;30\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiRedWhite	 start="\e\[0\=;\=\(31;47\|47;31\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiGreenWhite	 start="\e\[0\=;\=\(32;47\|47;32\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiYellowWhite	 start="\e\[0\=;\=\(33;47\|47;33\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiBlueWhite	 start="\e\[0\=;\=\(34;47\|47;34\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiMagentaWhite	 start="\e\[0\=;\=\(35;47\|47;35\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiCyanWhite	 start="\e\[0\=;\=\(36;47\|47;36\)m" end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiWhiteWhite	 start="\e\[0\=;\=\(37;47\|47;37\)m" end="\e\["me=e-2 contains=ansiConceal
 
-  syn match ansiExtended	 "\e\[\(0;\)\=[34]8;\(\d*;\)*\d*m"	contains=ansiConceal
+  syn match ansiExtended	 "\e\[;\=\(0;\)\=[34]8;\(\d*;\)*\d*m"   contains=ansiConceal
 
   if has("conceal")
    syn match ansiConceal		contained conceal "\e\[\(\d*;\)*\d*m"
@@ -254,16 +245,22 @@ fun! AnsiEsc#AnsiEsc()
   " -------------
   " Highlighting: {{{2
   " -------------
-  " --------------
-  " ansiesc_ignore: {{{3
-  " --------------
   if !has("conceal")
+   " --------------
+   " ansiesc_ignore: {{{3
+   " --------------
    hi def link ansiConceal	Ignore
    hi def link ansiIgnore	ansiStop
    hi def link ansiStop		Ignore
    hi def link ansiExtended	Ignore
   endif
   exe "setlocal hl=".substitute(&hl,'8:[^,]\{-},','8:Ignore,',"")
+
+  " handle 3 or more element ansi escape sequences by building syntax and highlighting rules
+  " specific to the current file
+  call s:MultiElementHandler()
+
+  hi ansiNone	cterm=NONE gui=NONE
 
   if &t_Co == 8 || &t_Co == 256
    " ---------------------
@@ -278,6 +275,15 @@ fun! AnsiEsc#AnsiEsc()
    hi ansiMagenta           ctermfg=magenta    guifg=magenta                                      cterm=none         gui=none
    hi ansiCyan              ctermfg=cyan       guifg=cyan                                         cterm=none         gui=none
    hi ansiWhite             ctermfg=white      guifg=white                                        cterm=none         gui=none
+
+   hi ansiBlackBg           ctermbg=black      guibg=black                                        cterm=none         gui=none
+   hi ansiRedBg             ctermbg=red        guibg=red                                          cterm=none         gui=none
+   hi ansiGreenBg           ctermbg=green      guibg=green                                        cterm=none         gui=none
+   hi ansiYellowBg          ctermbg=yellow     guibg=yellow                                       cterm=none         gui=none
+   hi ansiBlueBg            ctermbg=blue       guibg=blue                                         cterm=none         gui=none
+   hi ansiMagentaBg         ctermbg=magenta    guibg=magenta                                      cterm=none         gui=none
+   hi ansiCyanBg            ctermbg=cyan       guibg=cyan                                         cterm=none         gui=none
+   hi ansiWhiteBg           ctermbg=white      guibg=white                                        cterm=none         gui=none
 
    hi ansiBoldBlack         ctermfg=black      guifg=black                                        cterm=bold         gui=bold
    hi ansiBoldRed           ctermfg=red        guifg=red                                          cterm=bold         gui=bold
@@ -323,7 +329,7 @@ fun! AnsiEsc#AnsiEsc()
    hi ansiBlinkMagenta      ctermfg=magenta    guifg=magenta                                      cterm=standout     gui=undercurl
    hi ansiBlinkCyan         ctermfg=cyan       guifg=cyan                                         cterm=standout     gui=undercurl
    hi ansiBlinkWhite        ctermfg=white      guifg=white                                        cterm=standout     gui=undercurl
-                                                                                                                 
+
    hi ansiRapidBlinkBlack   ctermfg=black      guifg=black                                        cterm=standout     gui=undercurl
    hi ansiRapidBlinkRed     ctermfg=red        guifg=red                                          cterm=standout     gui=undercurl
    hi ansiRapidBlinkGreen   ctermfg=green      guifg=green                                        cterm=standout     gui=undercurl
@@ -448,6 +454,15 @@ fun! AnsiEsc#AnsiEsc()
    hi ansiCyan              ctermfg=cyan       guifg=cyan                                         cterm=none         gui=none
    hi ansiWhite             ctermfg=white      guifg=white                                        cterm=none         gui=none
 
+   hi ansiBlackBg           ctermbg=black      guibg=black                                        cterm=none         gui=none
+   hi ansiRedBg             ctermbg=red        guibg=red                                          cterm=none         gui=none
+   hi ansiGreenBg           ctermbg=green      guibg=green                                        cterm=none         gui=none
+   hi ansiYellowBg          ctermbg=yellow     guibg=yellow                                       cterm=none         gui=none
+   hi ansiBlueBg            ctermbg=blue       guibg=blue                                         cterm=none         gui=none
+   hi ansiMagentaBg         ctermbg=magenta    guibg=magenta                                      cterm=none         gui=none
+   hi ansiCyanBg            ctermbg=cyan       guibg=cyan                                         cterm=none         gui=none
+   hi ansiWhiteBg           ctermbg=white      guibg=white                                        cterm=none         gui=none
+
    hi ansiBoldBlack         ctermfg=black      guifg=black                                        cterm=bold         gui=bold
    hi ansiBoldRed           ctermfg=red        guifg=red                                          cterm=bold         gui=bold
    hi ansiBoldGreen         ctermfg=green      guifg=green                                        cterm=bold         gui=bold
@@ -492,7 +507,7 @@ fun! AnsiEsc#AnsiEsc()
    hi ansiBlinkMagenta      ctermfg=magenta    guifg=magenta                                      cterm=standout     gui=undercurl
    hi ansiBlinkCyan         ctermfg=cyan       guifg=cyan                                         cterm=standout     gui=undercurl
    hi ansiBlinkWhite        ctermfg=white      guifg=white                                        cterm=standout     gui=undercurl
-                                                                                                                 
+
    hi ansiRapidBlinkBlack   ctermfg=black      guifg=black                                        cterm=standout     gui=undercurl
    hi ansiRapidBlinkRed     ctermfg=red        guifg=red                                          cterm=standout     gui=undercurl
    hi ansiRapidBlinkGreen   ctermfg=green      guifg=green                                        cterm=standout     gui=undercurl
@@ -585,6 +600,189 @@ fun! AnsiEsc#AnsiEsc()
    hi ansiWhiteWhite        ctermfg=white      ctermbg=white      guifg=White      guibg=White    cterm=none         gui=none
   endif
 "  call Dret("AnsiEsc#AnsiEsc")
+endfun
+
+" ---------------------------------------------------------------------
+" s:MultiElementHandler: builds custom syntax highlighting for three or more element ansi escape sequences {{{2
+fun! s:MultiElementHandler()
+"  call Dfunc("s:MultiElementHandler()")
+  let curwp= SaveWinPosn(0)
+  keepj 1
+  norm! 0
+  let mehcnt = 0
+  let mehrules     = []
+  while search('\e\[\d\+;\d\+;\d\+\(;\d\+\)*m','cW')
+   let curcol  = col(".")+1
+   call search('m','cW')
+   let mcol    = col(".")
+   let ansiesc = strpart(getline("."),curcol,mcol - curcol)
+   let aecodes = split(ansiesc,'[;m]')
+"   call Decho("ansiesc<".ansiesc."> aecodes=".string(aecodes))
+   let skip         = 0
+   let mod          = "NONE,"
+   let fg           = ""
+   let bg           = ""
+
+   " if the ansiesc is
+   if index(mehrules,ansiesc) == -1
+    let mehrules+= [ansiesc]
+
+    for code in aecodes
+
+     " handle multi-code sequences (38;5;color  and 48;5;color)
+     if skip == 38 && code == 5
+      " handling <esc>[38;5
+      let skip= 385
+"      call Decho(" building code=".code." skip=".skip.": mod<".mod."> fg<".fg."> bg<".bg.">")
+      continue
+     elseif skip == 385
+      " handling <esc>[38;5;...
+      if has("gui") && has("gui_running")
+       let fg= s:Ansi2Gui(code)
+      else
+       let fg= code
+      endif
+      let skip= 0
+"      call Decho(" building code=".code." skip=".skip.": mod<".mod."> fg<".fg."> bg<".bg.">")
+      continue
+
+     elseif skip == 48 && code == 5
+      " handling <esc>[48;5
+      let skip= 485
+"      call Decho(" building code=".code." skip=".skip.": mod<".mod."> fg<".fg."> bg<".bg.">")
+      continue
+     elseif skip == 485
+      " handling <esc>[48;5;...
+      if has("gui") && has("gui_running")
+       let bg= s:Ansi2Gui(code)
+      else
+       let bg= code
+      endif
+      let skip= 0
+"      call Decho(" building code=".code." skip=".skip.": mod<".mod."> fg<".fg."> bg<".bg.">")
+      continue
+
+     else
+      let skip= 0
+     endif
+
+     " handle single-code sequences
+     if code == 1
+      let mod=mod."bold,"
+     elseif code == 2
+      let mod=mod."italic,"
+     elseif code == 3
+      let mod=mod."standout,"
+     elseif code == 4
+      let mod=mod."underline,"
+     elseif code == 5 || code == 6
+      let mod=mod."undercurl,"
+     elseif code == 7
+      let mod=mod."reverse,"
+
+     elseif code == 30
+      let fg= "black"
+     elseif code == 31
+      let fg= "red"
+     elseif code == 32
+      let fg= "green"
+     elseif code == 33
+      let fg= "yellow"
+     elseif code == 34
+      let fg= "blue"
+     elseif code == 35
+      let fg= "magenta"
+     elseif code == 36
+      let fg= "cyan"
+     elseif code == 37
+      let fg= "black"
+
+     elseif code == 40
+      let bg= "black"
+     elseif code == 41
+      let bg= "red"
+     elseif code == 42
+      let bg= "green"
+     elseif code == 43
+      let bg= "yellow"
+     elseif code == 44
+      let bg= "blue"
+     elseif code == 45
+      let bg= "magenta"
+     elseif code == 46
+      let bg= "cyan"
+     elseif code == 47
+      let bg= "black"
+
+     elseif code == 38
+      let skip= 38
+
+     elseif code == 48
+      let skip= 48
+     endif
+
+"     call Decho(" building code=".code." skip=".skip.": mod<".mod."> fg<".fg."> bg<".bg.">")
+    endfor
+
+    " fixups
+    let mod= substitute(mod,',$','','')
+
+    " build syntax-recognition rule
+    let mehcnt  = mehcnt + 1
+    let synrule = "syn region ansiMEH".mehcnt
+    let synrule = synrule.' start="\e\['.ansiesc.'"'
+    let synrule = synrule.' end="\e\["me=e-2'
+    let synrule = synrule." contains=ansiConceal"
+"    call Decho(" exe synrule: ".synrule)
+    exe synrule
+
+    " build highlighting rule
+    let hirule= "hi ansiMEH".mehcnt
+    if has("gui") && has("gui_running")
+     let hirule=hirule." gui=".mod
+     if fg != ""| let hirule=hirule." guifg=".fg| endif
+     if bg != ""| let hirule=hirule." guibg=".bg| endif
+    else
+     let hirule=hirule." cterm=".mod
+     if fg != ""| let hirule=hirule." ctermfg=".fg| endif
+     if bg != ""| let hirule=hirule." ctermbg=".bg| endif
+    endif
+"    call Decho(" exe hirule: ".hirule)
+    exe hirule
+   endif
+
+  endwhile
+
+  call RestoreWinPosn(curwp)
+"  call Dret("s:MultiElementHandler")
+endfun
+
+" ---------------------------------------------------------------------
+" s:Ansi2Gui: converts an ansi-escape sequence (for 256-color xterms) {{{2
+"           to an equivalent gui color
+"           colors   0- 15:
+"           colors  16-231:  6x6x6 color cube, code= 16+r*36+g*6+b  with r,g,b each in [0,5]
+"           colors 232-255:  grayscale ramp,   code= 10*gray + 8    with gray in [0,23] (black,white left out)
+fun! s:Ansi2Gui(code)
+"  call Dfunc("s:Ansi2Gui(code=)".a:code)
+  let guicolor= a:code
+  if a:code < 16
+   let code2rgb = [ "black", "red3", "green3", "yellow3", "blue3", "magenta3", "cyan3", "gray70", "gray40", "red", "green", "yellow", "royalblue3", "magenta", "cyan", "white"]
+   let guicolor = code2rgb[a:code]
+  elseif a:code >= 232
+   let code     = a:code - 232
+   let code     = 10*code + 8
+   let guicolor = printf("#%02x%02x%02x",code,code,code)
+  else
+   let code     = a:code - 16
+   let code2rgb = [43,85,128,170,213,255]
+   let r        = code2rgb[code/36]
+   let g        = code2rgb[(code%36)/6]
+   let b        = code2rgb[code%6]
+   let guicolor = printf("#%02x%02x%02x",r,g,b)
+  endif
+"  call Dret("s:Ansi2Gui ".guicolor)
+  return guicolor
 endfun
 
 " ---------------------------------------------------------------------
