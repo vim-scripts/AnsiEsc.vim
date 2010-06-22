@@ -1,8 +1,8 @@
 " AnsiEsc.vim: Uses syntax highlighting.  A vim 7.0 plugin!
 " Language:		Text with ansi escape sequences
 " Maintainer:	Dr. Charles E. Campbell, Jr. <NdrOchipS@PcampbellAfamily.Mbiz>
-" Version:		10
-" Date:		Apr 07, 2010
+" Version:		11
+" Date:		Jun 22, 2010
 "
 " Usage: :AnsiEsc
 "
@@ -16,7 +16,7 @@
 if exists("g:loaded_AnsiEsc")
  finish
 endif
-let g:loaded_AnsiEsc = "v10"
+let g:loaded_AnsiEsc = "v11"
 if v:version < 700
  echohl WarningMsg
  echo "***warning*** this version of AnsiEsc needs vim 7.0"
@@ -45,12 +45,22 @@ fun! AnsiEsc#AnsiEsc()
    exe "set ft=".s:AnsiEsc_ft_{bn}
    if exists("colorname")|exe "colors ".colorname|endif
    let s:AnsiEsc_enabled_{bn}= 0
+   if has("gui_running") && has("menu") && &go =~ 'm'
+    " menu support
+    exe 'silent! unmenu '.g:DrChipTopLvlMenu.'AnsiEsc'
+    exe 'menu '.g:DrChipTopLvlMenu.'AnsiEsc.Start<tab>:AnsiEsc		:AnsiEsc<cr>'
+   endif
 "   call Dret("AnsiEsc#AnsiEsc")
    return
   else
    let s:AnsiEsc_ft_{bn}      = &ft
    let s:AnsiEsc_enabled_{bn} = 1
 "   call Decho("enable AnsiEsc highlighting: s:AnsiEsc_ft_".bn."<".s:AnsiEsc_ft_{bn}."> bn#".bn)
+   if has("gui_running") && has("menu") && &go =~ 'm'
+    " menu support
+    exe 'silent! unmenu '.g:DrChipTopLvlMenu.'AnsiEsc'
+    exe 'menu '.g:DrChipTopLvlMenu.'AnsiEsc.Stop<tab>:AnsiEsc		:AnsiEsc<cr>'
+   endif
 
    " -----------------
    "  Conceal Support: {{{2
@@ -68,6 +78,7 @@ fun! AnsiEsc#AnsiEsc()
   " Ansi Escape Sequence Handling: {{{2
   " ------------------------------
   syn region ansiNone		start="\e\[[01;]m"  end="\e\["me=e-2 contains=ansiConceal
+  syn region ansiNone		start="\e\[m"       end="\e\["me=e-2 contains=ansiConceal
 
   syn region ansiBlack		start="\e\[0\=;\=30m" end="\e\["me=e-2 contains=ansiConceal
   syn region ansiRed		start="\e\[0\=;\=31m" end="\e\["me=e-2 contains=ansiConceal
@@ -151,9 +162,15 @@ fun! AnsiEsc#AnsiEsc()
   syn region ansiRVWhite	 start="\e\[0\=;\=\%(1;\)\=\%(7;37\|37;7\)m" end="\e\["me=e-2 contains=ansiConceal
 
   if has("conceal")
-   syn match ansiStop		conceal "\e\[0\=m"
+   syn match ansiStop		conceal "\e\[0\{1,2}m"
+   syn match ansiStop		conceal "\e\[K"
+   syn match ansiStop		conceal "\e\[H"
+   syn match ansiStop		conceal "\e\[2J"
   else
-   syn match ansiStop		"\e\[0\=m"
+   syn match ansiStop		"\e\[0\{1,2}\=m"
+   syn match ansiStop		"\e\[K"
+   syn match ansiStop		"\e\[H"
+   syn match ansiStop		"\e\[2J"
   endif
 
   "syn match ansiIgnore		conceal "\e\[\([56];3[0-9]\|3[0-9];[56]\)m"
@@ -608,7 +625,7 @@ fun! s:MultiElementHandler()
 "  call Dfunc("s:MultiElementHandler()")
   let curwp= SaveWinPosn(0)
   keepj 1
-  norm! 0
+  keepj norm! 0
   let mehcnt = 0
   let mehrules     = []
   while search('\e\[\d\+;\d\+;\d\+\(;\d\+\)*m','cW')

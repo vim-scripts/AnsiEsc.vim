@@ -1,8 +1,8 @@
-*AnsiEsc.txt*	Ansi Escape Sequence Visualization		Apr 07, 2010
+*AnsiEsc.txt*	Ansi Escape Sequence Visualization		May 12, 2010
 
 Author:  Charles E. Campbell, Jr.  <NdrOchip@ScampbellPfamily.AbizM>
 	  (remove NOSPAM from Campbell's email first)
-Copyright: (c) 2004-2009 by Charles E. Campbell, Jr.	*AnsiEsc-copyright*
+Copyright: (c) 2004-2010 by Charles E. Campbell, Jr.	*AnsiEsc-copyright*
            The VIM LICENSE applies to AnsiEsc.vim and AnsiEsc.txt
            (see |copyright|) except use "AnsiEsc" instead of "Vim".
 	   No warranty, express or implied.  Use At-Your-Own-Risk.
@@ -79,6 +79,9 @@ White   [37;40mW[m  [37;41mW[m  [37;42mW[m  [37;43mW[m  [37;44mW[m   
 
 ==============================================================================
 3. AnsiEsc History					*AnsiEsc-history* {{{1
+  v11	Apr 20, 2010	* AnsiEsc now supports enabling/disabling via a menu
+			* <esc>[K and <esc>[00m now supported (as
+			  grep --color=always   issues them)
   v10   May 06, 2009	* Three or more codes in an ANSI escape sequence are
 			  supported by building custom syntax and highlighting
 			  commands.
