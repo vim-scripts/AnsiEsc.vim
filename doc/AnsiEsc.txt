@@ -1,4 +1,4 @@
-*AnsiEsc.txt*	Ansi Escape Sequence Visualization		May 12, 2010
+*AnsiEsc.txt*	Ansi Escape Sequence Visualization		Dec 13, 2010
 
 Author:  Charles E. Campbell, Jr.  <NdrOchip@ScampbellPfamily.AbizM>
 	  (remove NOSPAM from Campbell's email first)
@@ -38,7 +38,9 @@ Copyright: (c) 2004-2010 by Charles E. Campbell, Jr.	*AnsiEsc-copyright*
 		improve your colorscheme!
 
 	USAGE~
-		:AnsiEsc
+		:AnsiEsc   -- toggles Ansi escape sequence highlighting
+		:AnsiEsc!  -- rebuilds highlighting for new/removed three
+		              or more element Ansi escape sequences.
 	
 	RESULT~
 		Ansi escape sequences become concealed or ignored (depending
@@ -55,7 +57,8 @@ Copyright: (c) 2004-2010 by Charles E. Campbell, Jr.	*AnsiEsc-copyright*
 
 	EXAMPLE~
 
-		You'll want to   :AnsiEsc   to see the following properly!
+		You'll want to use   :AnsiEsc   to see the following properly!
+		(using Vince Negri's conceal option or vim 7.3)
 
             [34;47mColor Escape Sequences[m
 [37m  -  [m   [37;1m  1  [m   [37;2m  2  [m   [37;3m  3  [m   [37;4m  4  [m   [37;5m  5  [m   [37;7m  7  [m
@@ -77,8 +80,35 @@ Magenta [35;40mM[m  [35;41mM[m  [35;42mM[m  [35;43mM[m  [35;44mM[m   
 Cyan    [36;40mC[m  [36;41mC[m  [36;42mC[m  [36;43mC[m  [36;44mC[m   [36;45mC[m   [36;46mC[m   [36;47mC[m
 White   [37;40mW[m  [37;41mW[m  [37;42mW[m  [37;43mW[m  [37;44mW[m   [37;45mW[m   [37;46mW[m   [37;47mW[m
 
+	Here's the vim logo:
+
+        [30;48;5;22m/  \[m
+       [30;48;5;22m/    \[m
+      [30;48;5;22m/      \[m
+     [30;48;5;22m/        \[m
+ [38;5;34;48;5;251m+----+[30;48;5;22m [38;5;34;48;5;251m+----+[30;48;5;22m \[m
+ [38;5;34;48;5;251m++  ++[30;48;5;22m [38;5;34;48;5;251m+-   |[30;48;5;22m  \[m
+ [30;48;5;22m/[38;5;34;48;5;251m|  |[30;48;5;22m   [m[38;5;34;48;5;251m/  /[30;48;5;22m    \[m
+[30;48;5;22mX [38;5;34;48;5;251m|  |[30;48;5;22m  [38;5;34;48;5;251m/  /O[30;48;5;22m     \[m
+ [30;48;5;22m\[38;5;34;48;5;251m|  |[30;48;5;22m [38;5;34;48;5;251m/  /+-+[30;48;5;22m [38;5;34;48;5;251m+-\[30;48;5;22m/[38;5;34;48;5;251m/-+[m
+  [38;5;34;48;5;251m|  |/  /[30;48;5;22m [38;5;34;48;5;251m| |[30;48;5;22m [38;5;34;48;5;251m|  v  |[m
+  [38;5;34;48;5;251m|  /  /[30;48;5;22m  [38;5;34;48;5;251m| |[30;48;5;22m [m[38;5;34;48;5;251m| +  [38;5;34;48;5;251m+|[m
+  [38;5;34;48;5;251m|    /[30;48;5;22m   [38;5;34;48;5;251m| |[30;48;5;22m/[38;5;34;48;5;251m| |[38;5;34;48;5;251m\/[m[38;5;34;48;5;251m||[m
+  [38;5;34;48;5;251m+----[30;48;5;22m\   [38;5;34;48;5;251m+-+ [38;5;34;48;5;251m+-+[m  [38;5;34;48;5;251m++[m
+        [30;48;5;22m\   /[m
+         [30;48;5;22m\ /[m
+
+
 ==============================================================================
 3. AnsiEsc History					*AnsiEsc-history* {{{1
+  v12	Jul 23, 2010	* changed conc to |'cole'| to correspond to vim 7.3's
+			  change
+	Aug 10, 2010	* (Rainer M Schmid) changed conceallevel setting to
+			  depend on whether the version is before vim 7.3;
+			  for 7.3, also sets concealcursor
+			* Restores conc/cole/cocu settings when AnsiEsc is
+			  toggled off.
+	Dec 13, 2010	* Included some additional sequences involving 0
   v11	Apr 20, 2010	* AnsiEsc now supports enabling/disabling via a menu
 			* <esc>[K and <esc>[00m now supported (as
 			  grep --color=always   issues them)
